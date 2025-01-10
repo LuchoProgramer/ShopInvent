@@ -8,7 +8,8 @@ from decimal import Decimal
 from .services import crear_factura, asignar_pagos_a_factura, obtener_o_crear_cliente
 from inventarios.services.validacion_inventario_service import ValidacionInventarioService
 from RegistroTurnos.models import RegistroTurno
-from facturacion.models import Carrito
+from facturacion.models import Carrito, Impuesto
+from facturacion.forms import ImpuestoForm
 
 @transaction.atomic
 def generar_factura(request):
