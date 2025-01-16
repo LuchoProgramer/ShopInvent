@@ -27,4 +27,5 @@ urlpatterns = [
     path('facturacion/', include('facturacion.urls')),  # Agregar esta línea para incluir las rutas de 'facturacion'
     path('', core_views.home, name='home'),  # Ruta raíz para la página de inicio
     path('compras/', include('compras.urls')),
+    path('inventarios/', include('inventarios.urls')),
 ]
