@@ -12,9 +12,8 @@ import os
 from django.conf import settings
 from inventarios.services.validacion_inventario_service import ValidacionInventarioService
 from inventarios.services.ajuste_inventario_service import AjusteInventarioService
-from sucursales.models import RazonSocial
+from core.models import Empresa  # Cambia RazonSocial por Empresa
 from django_tenants.utils import tenant_context  # Importamos tenant_context para asegurar el contexto del tenant
-
 
 def obtener_valor_base_iva(precio_con_iva, porcentaje_iva):
     precio_con_iva = Decimal(precio_con_iva)
@@ -23,7 +22,6 @@ def obtener_valor_base_iva(precio_con_iva, porcentaje_iva):
     valor_base = precio_con_iva / (Decimal('1') + (porcentaje_iva / Decimal('100')))
     valor_iva = precio_con_iva - valor_base
     return valor_base, valor_iva
-
 
 def crear_factura(cliente, sucursal, usuario, carrito_items):
     print("Iniciando la creación de la factura...")
@@ -53,7 +51,7 @@ def crear_factura(cliente, sucursal, usuario, carrito_items):
                 total_con_impuestos += subtotal_item + iva_item
 
             print("Iniciando transacción para crear la factura y los detalles...")
-            
+
             # Aquí es donde aplicamos el contexto del tenant
             with tenant_context(sucursal.tenant):  # Establecemos el contexto del tenant
                 sucursal.incrementar_secuencial()
@@ -66,7 +64,7 @@ def crear_factura(cliente, sucursal, usuario, carrito_items):
 
                 factura = Factura.objects.create(
                     sucursal=sucursal,
-                    razon_social=sucursal.razon_social,
+                    razon_social=sucursal.razon_social,  # Campo ajustado
                     cliente=cliente,
                     usuario=usuario,
                     numero_autorizacion=numero_autorizacion,
@@ -118,7 +116,6 @@ def crear_factura(cliente, sucursal, usuario, carrito_items):
         print(f"Error general en la transacción: {e}")
         raise e
 
-
 def obtener_o_crear_cliente(cliente_id, identificacion, data_cliente):
     try:
         if cliente_id:
@@ -134,13 +131,11 @@ def obtener_o_crear_cliente(cliente_id, identificacion, data_cliente):
     except Cliente.DoesNotExist:
         raise ValidationError("Cliente no encontrado.")
 
-
 def verificar_turno_activo(usuario):
     turno_activo = RegistroTurno.objects.filter(usuario=usuario, fin_turno__isnull=True).first()
     if not turno_activo:
         raise ValidationError("No tienes un turno activo. Por favor inicia un turno.")
     return turno_activo
-
 
 def asignar_pagos_a_factura(factura, metodos_pago, montos_pago):
     metodo_descripciones = {
@@ -159,7 +154,6 @@ def asignar_pagos_a_factura(factura, metodos_pago, montos_pago):
             total=Decimal(monto_pago),
             descripcion=f"Pago con {descripcion}"
         )
-
 
 def generar_pdf_factura_y_guardar(factura):
     nombre_archivo = f"factura_{factura.numero_autorizacion}.pdf"

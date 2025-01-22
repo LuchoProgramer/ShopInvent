@@ -5,7 +5,7 @@ from core.models import Producto, Sucursal
 from django_tenants.utils import tenant_context
 
 class Proveedor(models.Model):
-    empresa = models.ForeignKey('Empresa', on_delete=models.CASCADE)
+    empresa = models.ForeignKey('empresas.Empresa', on_delete=models.CASCADE)
     nombre = models.CharField(max_length=255)  # Razón Social
     ruc = models.CharField(
         max_length=13,

@@ -174,3 +174,49 @@ class Factura(models.Model):
         Método para acceder a la razón social desde el modelo Empresa (tenant).
         """
         return self.empresa.razon_social
+
+
+
+class DetalleFactura(models.Model):
+    empresa = models.ForeignKey(Empresa, on_delete=models.CASCADE, related_name="detalles_factura", db_constraint=False)
+    factura = models.ForeignKey('facturacion.Factura', on_delete=models.CASCADE, related_name='detalles')
+    producto = models.ForeignKey('core.Producto', on_delete=models.CASCADE)
+    presentacion = models.ForeignKey('core.Presentacion', on_delete=models.CASCADE)  # Relación con Presentacion
+    codigo_principal = models.CharField(max_length=20, null=True, blank=True)  # Código único del producto
+    cantidad = models.IntegerField()
+    precio_unitario = models.DecimalField(max_digits=10, decimal_places=2)
+    subtotal = models.DecimalField(max_digits=10, decimal_places=2)
+    descuento = models.DecimalField(max_digits=10, decimal_places=2, default=0)
+    total = models.DecimalField(max_digits=10, decimal_places=2)
+    valor_iva = models.DecimalField(max_digits=10, decimal_places=2, default=Decimal('0.00'))
+
+    class Meta:
+        unique_together = ('empresa', 'factura', 'producto')
+
+    def clean(self):
+        """
+        Validaciones de integridad para asegurar que los datos coincidan con la lógica de negocio.
+        """
+        # Debugging
+        print(f"Cantidad: {self.cantidad}, Precio Unitario: {self.precio_unitario}, "
+              f"Subtotal esperado: {(self.cantidad * self.precio_unitario) - self.descuento}, "
+              f"Subtotal actual: {self.subtotal}, Descuento: {self.descuento}")
+
+        # Validación de cantidad
+        if self.cantidad <= 0:
+            raise ValidationError("La cantidad debe ser mayor que cero.")
+        
+        # Validación de precio unitario
+        if self.precio_unitario <= 0:
+            raise ValidationError("El precio unitario debe ser mayor que cero.")
+        
+        # Cálculo y validación de subtotal
+        subtotal_calculado = (self.cantidad * self.precio_unitario) - self.descuento
+        if self.subtotal != subtotal_calculado:
+            raise ValidationError(f"El subtotal no es correcto. Debe ser igual a (cantidad * precio unitario) - descuento. Subtotal esperado: {subtotal_calculado}")
+        
+        # Validación del total
+        if self.total != self.subtotal + self.valor_iva:
+            raise ValidationError("El total debe ser igual al subtotal más el IVA.")
+
+        super(DetalleFactura, self).clean()

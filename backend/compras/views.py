@@ -52,7 +52,13 @@ def detalle_proveedor(request, proveedor_id):
         proveedor = get_object_or_404(Proveedor, id=proveedor_id, empresa=request.tenant)
         context = {'proveedor': proveedor}
         return render(request, 'proveedores/detalle_proveedor.html', context)
-    
+
+
+def lista_proveedores(request):
+    with tenant_context(request.tenant):  # Asegura que los proveedores se asocian al tenant actual
+        proveedores = Proveedor.objects.all()  # Obtiene todos los proveedores asociados al tenant actual
+    return render(request, 'proveedores/lista_proveedores.html', {'proveedores': proveedores})
+
 
 
 def lista_compras(request):
@@ -126,3 +132,4 @@ def detalle_compra(request, compra_id):
     with tenant_context(compra.sucursal.empresa):
         detalles = compra.detalles.all()
     return render(request, 'compras/detalle_compra.html', {'compra': compra, 'detalles': detalles})
+

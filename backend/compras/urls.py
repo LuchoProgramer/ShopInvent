@@ -10,5 +10,4 @@ urlpatterns = [
     path('proveedor/<int:proveedor_id>/editar/', views.editar_proveedor, name='editar_proveedor'),  # Editar proveedor
     path('compras/', views.lista_compras, name='lista_compras'),  # Lista de compras
     path('compra/<int:compra_id>/', views.detalle_compra, name='detalle_compra'),  # Detalle de compra
-    path('compra/producto/<int:detalle_id>/', views.detalle_producto_compra, name='detalle_producto_compra'),
 ]

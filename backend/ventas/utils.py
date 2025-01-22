@@ -3,6 +3,7 @@ from RegistroTurnos.models import RegistroTurno
 import logging
 from django_tenants.utils import tenant_context
 
+
 logger = logging.getLogger(__name__)
 
 def obtener_turno_activo(usuario):
@@ -23,16 +24,13 @@ def obtener_turno_activo(usuario):
         logger.error(f"Error al obtener el turno activo: {e}")
         return None
 
-
 def obtener_carrito(usuario):
-    """
-    Obtiene el carrito asociado al usuario actual, basado en su turno activo.
-    """
+    # Mueve la importación aquí para evitar que se ejecute al inicio
+    from ventas.utils import obtener_turno_activo  # Asegúrate de que solo la necesitas aquí
     turno_activo = obtener_turno_activo(usuario)
     print(f"Turno activo para el usuario {usuario.username}: {turno_activo}")
 
     if turno_activo:
-        # Usamos tenant_context aquí también para obtener los items del carrito bajo el contexto del tenant
         with tenant_context(usuario.sucursal.empresa):
             carrito_items = Carrito.objects.filter(turno=turno_activo)
             print(f"Productos en el carrito para el turno {turno_activo.id}: {carrito_items.count()}")
@@ -40,6 +38,7 @@ def obtener_carrito(usuario):
     else:
         print("No hay turno activo para este usuario.")
         return Carrito.objects.none()
+
 
 
 def vaciar_carrito(usuario):

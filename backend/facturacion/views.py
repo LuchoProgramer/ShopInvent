@@ -5,11 +5,14 @@ from django.db import transaction
 from django.http import JsonResponse
 from django.urls import reverse
 from decimal import Decimal
-from .services import crear_factura, asignar_pagos_a_factura, obtener_o_crear_cliente
+from facturacion.services import crear_factura, asignar_pagos_a_factura, obtener_o_crear_cliente
 from inventarios.services.validacion_inventario_service import ValidacionInventarioService
 from RegistroTurnos.models import RegistroTurno
-from facturacion.models import Carrito, Impuesto
+from facturacion.models import Impuesto, Cliente
 from facturacion.forms import ImpuestoForm
+from ventas.models import Carrito
+from ventas.utils import obtener_carrito
+from .services import generar_pdf_factura_y_guardar
 
 @transaction.atomic
 def generar_factura(request):

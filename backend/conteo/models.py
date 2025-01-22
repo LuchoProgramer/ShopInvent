@@ -3,10 +3,10 @@ from django.core.exceptions import ValidationError
 from django_tenants.utils import tenant_context  # Importante para multitenancy
 
 class ConteoDiario(models.Model):
-    sucursal = models.ForeignKey('sucursales.Sucursal', on_delete=models.CASCADE)  
+    sucursal = models.ForeignKey('core.Sucursal', on_delete=models.CASCADE)  
     usuario = models.ForeignKey('auth.User', on_delete=models.CASCADE)
     fecha_conteo = models.DateField(auto_now_add=True)
-    producto = models.ForeignKey('inventarios.Producto', on_delete=models.CASCADE)  
+    producto = models.ForeignKey('core.Producto', on_delete=models.CASCADE)  
     cantidad_contada = models.IntegerField()
 
     def __str__(self):

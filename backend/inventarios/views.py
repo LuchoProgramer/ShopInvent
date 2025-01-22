@@ -1,10 +1,12 @@
 from django.shortcuts import render, redirect, get_object_or_404
 from django_tenants.utils import tenant_context
 from django.core.paginator import Paginator
-from .models import Inventario
+from .models import Inventario, MovimientoInventario,Transferencia
 from core.models import Sucursal, Producto
 from django.contrib import messages
 from .forms import InventarioForm
+from .forms import TransferenciaForm
+
 
 def seleccionar_sucursal(request):
     usuario = request.user
@@ -126,10 +128,7 @@ def ajustar_inventario(request, producto_id, sucursal_id):
     })
 
 
-from django.shortcuts import get_object_or_404, redirect, render
-from .models import Transferencia, Inventario, MovimientoInventario, Producto, Sucursal
-from .forms import TransferenciaForm
-from django.contrib import messages
+
 
 def crear_transferencia(request):
     if request.method == 'POST':
@@ -199,7 +198,6 @@ def lista_transferencias(request):
 def lista_movimientos_inventario(request):
     movimientos = MovimientoInventario.objects.filter(sucursal__empresa=request.tenant).order_by('-fecha')
     return render(request, 'inventarios/lista_movimientos_inventario.html', {'movimientos': movimientos})
-
 
 
 
